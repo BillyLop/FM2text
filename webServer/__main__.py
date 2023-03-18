@@ -92,7 +92,9 @@ class RSConnectionSocket(WebSocketHandler):
 
   def open(self):
     # clients must be accessed through class object!!!
+    print('clients')
     RSConnectionSocket.clients.append(self)
+    print(RSConnectionSocket.clients) 
     
   def on_message(self, message):
     try:
@@ -128,7 +130,8 @@ settings = {
 }
 
 application = tornado.web.Application([
-    (r'/(.*)', DirectoryHandler, {'path': './'})
+    (r'/echo', RSConnectionSocket),
+    (r'/site/(.*)', DirectoryHandler, {'path': './site/'})
 ], **settings)
 
 if __name__ == "__main__":

@@ -16,6 +16,11 @@
           FM2Text Project</h1>
         <p class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">From
           IA over telecomunication...</p>
+        <div id="mensajes"
+          class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400"
+        >
+          ...
+        </div>
         <a href="#"
           class="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900">
           Get started
@@ -26,8 +31,10 @@
           </svg>
         </a>
         <a href="#"
-          class="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
-          Speak to Sales
+          class="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800"
+          onclick="WebSocketCommunication()"  
+        >
+          FM Speak
         </a>
       </div>
       <div class="hidden lg:mt-0 lg:col-span-5 lg:flex">
@@ -35,6 +42,46 @@
       </div>
     </div>
   </section>
+  <script type="text/javascript">
+    function showMessages(text) {
+      var elem = document.getElementById("mensajes");
+      elem.innerText = text;
+    }
+
+    function WebSocketCommunication() {
+
+      if ("WebSocket" in window) {
+        alert("WebSocket is supported by your Browser!");
+
+        // Let us open a web socket
+        var ws = new WebSocket("ws://192.168.1.35:8080/echo");
+
+        ws.onopen = function () {
+
+          // Web Socket is connected, send data using send()
+          ws.send(JSON.stringify({
+            message: "Enviando mensaje"
+          }));
+          showMessages("Message is sent...");
+        };
+
+        ws.onmessage = function (evt) {
+          var received_msg = evt.data;
+          showMessages("Message is received..." + received_msg);
+        };
+
+        ws.onclose = function () {
+
+          // websocket is closed.
+          showMessages("Connection is closed...");
+        };
+      } else {
+
+        // The browser doesn't support WebSocket
+        alert("WebSocket NOT supported by your Browser!");
+      }
+    }
+  </script>
 </body>
 
 </html>
