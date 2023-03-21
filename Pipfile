@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 tornado = "*"
+transformers = "*"
+librosa = "*"
+torch = "*"
 
 [dev-packages]
 

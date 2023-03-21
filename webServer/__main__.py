@@ -9,6 +9,11 @@ from tornado.web import RequestHandler
 from tornado.websocket import WebSocketHandler
 from tornado.escape import json_decode
 
+# manejo de audio
+import librosa
+import torch
+from transformers import Wav2Vec2ForCTC, Wav2Vec2Tokenizer
+
 # config options
 define('port', default=8080, type=int, help='port to run web server on')
 define('debug', default=True, help='start app in debug mode')
@@ -86,6 +91,27 @@ class DirectoryHandler(StaticFileHandler):
 
 class RSConnectionSocket(WebSocketHandler):
   clients = []
+
+  def testAudio(self):
+    # Loading the audio file
+    audio, rate = librosa.load("audio_test.wav", sr = 16000)
+    print(audio)
+    print(rate)
+
+    # Importing Wav2Vec pretrained model
+    tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-base-960h")
+    model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")
+    # Taking an input value
+    input_values = tokenizer(audio, return_tensors = "pt").input_values
+    # Storing logits (non-normalized prediction values)
+    logits = model(input_values).logits
+    # Storing predicted ids
+    prediction = torch.argmax(logits, dim = -1)
+    # Passing the prediction to the tokenzer decode to get the transcription
+    transcription = tokenizer.batch_decode(prediction)[0]
+    # Printing the transcription
+    print(transcription)
+    return transcription
 
   def check_origin(self, origin):
     return True
