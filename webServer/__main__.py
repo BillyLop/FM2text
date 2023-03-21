@@ -127,9 +127,11 @@ class RSConnectionSocket(WebSocketHandler):
       params = json_decode(message)
       requestPage = None
       data = {}
+      message = self.testAudio()
       content = {
         'status': 'OK',
         'code': 200,
+        'message': message
       }
       self.write_message(content)
       self.close()
