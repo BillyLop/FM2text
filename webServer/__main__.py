@@ -94,7 +94,7 @@ class RSConnectionSocket(WebSocketHandler):
 
   def testAudio(self):
     # Loading the audio file
-    audio, rate = librosa.load("audio_test.wav", sr = 16000)
+    audio, rate = librosa.load("./webServer/audio_test.wav", sr = 16000)
     print(audio)
     print(rate)
 

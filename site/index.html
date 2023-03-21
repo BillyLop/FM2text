@@ -54,7 +54,7 @@
         alert("WebSocket is supported by your Browser!");
 
         // Let us open a web socket
-        var ws = new WebSocket("ws://192.168.1.35:8080/echo");
+        var ws = new WebSocket("ws://192.168.1.12:8080/echo");
 
         ws.onopen = function () {
 
@@ -66,14 +66,14 @@
         };
 
         ws.onmessage = function (evt) {
-          var received_msg = evt.data;
-          showMessages("Message is received..." + received_msg);
+          var received_msg = JSON.parse(evt.data);
+          showMessages(received_msg.message);
         };
 
         ws.onclose = function () {
 
           // websocket is closed.
-          showMessages("Connection is closed...");
+          // showMessages("Connection is closed...");
         };
       } else {
 
