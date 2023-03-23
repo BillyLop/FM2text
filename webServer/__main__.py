@@ -99,8 +99,8 @@ class RSConnectionSocket(WebSocketHandler):
     print(rate)
 
     # Importing Wav2Vec pretrained model
-    tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-base-960h")
-    model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")
+    tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-large-xlsr-53-spanish")
+    model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-large-xlsr-53-spanish")
     # Taking an input value
     input_values = tokenizer(audio, return_tensors = "pt").input_values
     # Storing logits (non-normalized prediction values)
