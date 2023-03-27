@@ -10,7 +10,7 @@ from tornado.websocket import WebSocketHandler
 from tornado.escape import json_decode
 import librosa
 import torch
-from transformers import Wav2Vec2ForCTC, Wav2Vec2Tokenizer, Wav2Vec2CTCTokenizer
+from transformers import Wav2Vec2ForCTC, Wav2Vec2Tokenizer, Wav2Vec2CTCTokenizer, Wav2Vec2Processor
 #import IPython.display as display#
 
 
@@ -99,33 +99,33 @@ class RSConnectionSocket(WebSocketHandler):
 
   def testAudio(self):
     # Loading the audio file
-    #filename = "/home/popuser/Downloads/SDR-course-material-2023/Laboratory/Lab_03/Receiver/data/audio.wav"
-    filename = "./webServer/test_grab.wav"
-    sr = librosa.get_samplerate (filename) #sample rate
-    audio, rate = librosa.load(filename, sr=sr)
+    filename = "/home/popuser/Downloads/SDR-course-material-2023/Laboratory/Lab_03/Receiver/data/audio.wav"
+    #filename = "./webServer/test_grab.wav"
+    # sr = librosa.get_samplerate (filename) #sample rate
+    audio, rate = librosa.load(filename, sr=17000)
     print("audio tipo")
     print(type(audio))
     print(audio)
-    stream = librosa.stream(filename, block_length = 256, frame_length = 4096, hop_length = 1024) 
+    stream = librosa.stream(filename, block_length = 512, frame_length = 1024, hop_length = 1024) 
     for parteaudio in stream:
         print("entra al for")
         print("data")
         print(type(parteaudio))
         print(parteaudio)
-        data_audio = librosa.stft(parteaudio, center = False)
+        dataaudio = librosa.stft(parteaudio, center = False)
         print("data_audio")
-        print(type(data_audio))
-        print(data_audio)
+        print(type(dataaudio))
+        print(dataaudio)
         #print("rate")
         #print(sr)
         #if len(parteaudio.shape) > 1:
         #   parteaudio = parteaudio[:, 0] + parteaudio[:, 1]
 
         # Importing Wav2Vec pretrained model
-        tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-large-xlsr-53-spanish")
+        tokenizer = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-large-xlsr-53-spanish")
         model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-large-xlsr-53-spanish")
         # Taking an input value
-        input_values = tokenizer(audio, return_tensors = "pt").input_values
+        input_values = tokenizer(parteaudio, return_tensors = "pt").input_values
         # Storing logits (non-normalized prediction values)
         logits = model(input_values).logits
         # Storing predicted ids
