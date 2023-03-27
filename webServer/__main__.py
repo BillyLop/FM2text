@@ -20,7 +20,7 @@ import torch
 from transformers import Wav2Vec2ForCTC, Wav2Vec2Tokenizer
 
 # config options
-define('port', default=8080, type=int, help='port to run web server on')
+define('port', default=8080, type=int, help='port to run web server on')#definición del puerto
 define('debug', default=True, help='start app in debug mode')
 define('route_to_index', default=False, help='route all requests to index.html')
 options.parse_command_line(final=True)
@@ -99,15 +99,23 @@ class RSConnectionSocket(WebSocketHandler):
 
   def testAudio(self):
     # Loading the audio file
-    filename = "/home/popuser/Downloads/SDR-course-material-2023/Laboratory/Lab_03/Receiver/data/audio.wav"
-    sr = librosa.get_samplerate (filename)
-    #stream = librosa.stream(filename, block_length = 256, frame_length = 4096, hop_length = 1024) 
-    audio = librosa.load(filename)
+    #filename = "/home/popuser/Downloads/SDR-course-material-2023/Laboratory/Lab_03/Receiver/data/audio.wav"
+    filename = "./webServer/test_grab.wav"
+    sr = librosa.get_samplerate (filename) #sample rate
+    audio, rate = librosa.load(filename, sr=sr)
+    print("audio tipo")
+    print(type(audio))
+    print(audio)
+    stream = librosa.stream(filename, block_length = 256, frame_length = 4096, hop_length = 1024) 
     for parteaudio in stream:
         print("entra al for")
-        #data_audio = librosa.stft(parteaudio, center = False)#
-        #print("data")
+        print("data")
+        print(type(parteaudio))
         print(parteaudio)
+        data_audio = librosa.stft(parteaudio, center = False)
+        print("data_audio")
+        print(type(data_audio))
+        print(data_audio)
         #print("rate")
         #print(sr)
         #if len(parteaudio.shape) > 1:
@@ -117,7 +125,7 @@ class RSConnectionSocket(WebSocketHandler):
         tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-large-xlsr-53-spanish")
         model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-large-xlsr-53-spanish")
         # Taking an input value
-        input_values = tokenizer(parteaudio.shape, return_tensors = "pt").input_values
+        input_values = tokenizer(audio, return_tensors = "pt").input_values
         # Storing logits (non-normalized prediction values)
         logits = model(input_values).logits
         # Storing predicted ids
