@@ -12,7 +12,7 @@ from tornado.escape import json_decode
 # manejo de audio
 import librosa
 import torch
-from transformers import Wav2Vec2ForCTC, Wav2Vec2Tokenizer
+from transformers import Wav2Vec2ForCTC, Wav2Vec2Tokenizer, Wav2Vec2Processor, Wav2Vec2CTCTokenizer
 
 # config options
 define('port', default=8080, type=int, help='port to run web server on')
@@ -94,12 +94,14 @@ class RSConnectionSocket(WebSocketHandler):
 
   def testAudio(self):
     # Loading the audio file
-    audio, rate = librosa.load("./webServer/test_grab.wav", sr = 16000)
+    filename = "./webServer/test_grab.wav"
+    #filename = "/home/popuser/Downloads/SDR-course-material-2023/Laboratory/Lab_03/Receiver/data/audio.wav"
+    audio, rate = librosa.load(filename, sr = 10000)
     print(audio)
     print(rate)
 
     # Importing Wav2Vec pretrained model
-    tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-large-xlsr-53-spanish")
+    tokenizer = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-large-xlsr-53-spanish")
     model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-large-xlsr-53-spanish")
     # Taking an input value
     input_values = tokenizer(audio, return_tensors = "pt").input_values
