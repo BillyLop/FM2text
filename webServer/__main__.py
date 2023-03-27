@@ -10,8 +10,8 @@ from tornado.websocket import WebSocketHandler
 from tornado.escape import json_decode
 import librosa
 import torch
-from transformers import Wav2Vec2ForCTC, Wav2Vec2Tokenizer
-import IPython.display as display
+from transformers import Wav2Vec2ForCTC, Wav2Vec2Tokenizer, Wav2Vec2CTCTokenizer
+#import IPython.display as display#
 
 
 # manejo de audio
@@ -101,17 +101,23 @@ class RSConnectionSocket(WebSocketHandler):
     # Loading the audio file
     filename = "/home/popuser/Downloads/SDR-course-material-2023/Laboratory/Lab_03/Receiver/data/audio.wav"
     sr = librosa.get_samplerate (filename)
-    stream = librosa.stream(filename, block_lenght = 256, frame_lenght = 4096, hop_lenght = 1024)
+    #stream = librosa.stream(filename, block_length = 256, frame_length = 4096, hop_length = 1024) 
+    audio = librosa.load(filename)
     for parteaudio in stream:
-        data_audio = librosa.stft(parteaudio, center = false)
-        print(data_audio)
-        print(sr)
+        print("entra al for")
+        #data_audio = librosa.stft(parteaudio, center = False)#
+        #print("data")
+        print(parteaudio)
+        #print("rate")
+        #print(sr)
+        #if len(parteaudio.shape) > 1:
+        #   parteaudio = parteaudio[:, 0] + parteaudio[:, 1]
 
         # Importing Wav2Vec pretrained model
-        tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-base-960h")
-        model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")
+        tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-large-xlsr-53-spanish")
+        model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-large-xlsr-53-spanish")
         # Taking an input value
-        input_values = tokenizer(data_audio, return_tensors = "pt").input_values
+        input_values = tokenizer(parteaudio.shape, return_tensors = "pt").input_values
         # Storing logits (non-normalized prediction values)
         logits = model(input_values).logits
         # Storing predicted ids
@@ -120,7 +126,7 @@ class RSConnectionSocket(WebSocketHandler):
         transcription = tokenizer.batch_decode(prediction)[0]
         # Printing the transcription
         print(transcription)
-    return transcription
+    return "Hola Mundo"
 
   def check_origin(self, origin):
     return True
