@@ -102,11 +102,14 @@ class RSConnectionSocket(WebSocketHandler):
     filename = "/home/popuser/Downloads/SDR-course-material-2023/Laboratory/Lab_03/Receiver/data/audio.wav"
     #filename = "./webServer/test_grab.wav"
     # sr = librosa.get_samplerate (filename) #sample rate
-    audio, rate = librosa.load(filename, sr=17000)
+    audio, rate = librosa.load(filename, sr=19000)
     print("audio tipo")
     print(type(audio))
     print(audio)
-    stream = librosa.stream(filename, block_length = 512, frame_length = 1024, hop_length = 1024) 
+    stream = librosa.stream(filename, block_length = 19000, frame_length = 10000, hop_length = 512) 
+    # Importing Wav2Vec pretrained model
+    tokenizer = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-large-xlsr-53-spanish")
+    model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-large-xlsr-53-spanish")
     for parteaudio in stream:
         print("entra al for")
         print("data")
@@ -121,9 +124,7 @@ class RSConnectionSocket(WebSocketHandler):
         #if len(parteaudio.shape) > 1:
         #   parteaudio = parteaudio[:, 0] + parteaudio[:, 1]
 
-        # Importing Wav2Vec pretrained model
-        tokenizer = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-large-xlsr-53-spanish")
-        model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-large-xlsr-53-spanish")
+
         # Taking an input value
         input_values = tokenizer(parteaudio, return_tensors = "pt").input_values
         # Storing logits (non-normalized prediction values)
