@@ -99,23 +99,27 @@ class RSConnectionSocket(WebSocketHandler):
 
   def testAudio(self):
     # Loading the audio file
-    audio, rate = librosa.load("./webServer/test_grab.wav", sr = 16000)
-    print(audio)
-    print(rate)
+    filename = "/home/popuser/Downloads/SDR-course-material-2023/Laboratory/Lab_03/Receiver/data/audio.wav"
+    sr = librosa.get_samplerate (filename)
+    stream = librosa.stream(filename, block_lenght = 256, frame_lenght = 4096, hop_lenght = 1024)
+    for parteaudio in stream:
+        data_audio = librosa.stft(parteaudio, center = false)
+        print(data_audio)
+        print(sr)
 
-    # Importing Wav2Vec pretrained model
-    tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-base-960h")
-    model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")
-    # Taking an input value
-    input_values = tokenizer(audio, return_tensors = "pt").input_values
-    # Storing logits (non-normalized prediction values)
-    logits = model(input_values).logits
-    # Storing predicted ids
-    prediction = torch.argmax(logits, dim = -1)
-    # Passing the prediction to the tokenzer decode to get the transcription
-    transcription = tokenizer.batch_decode(prediction)[0]
-    # Printing the transcription
-    print(transcription)
+        # Importing Wav2Vec pretrained model
+        tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-base-960h")
+        model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")
+        # Taking an input value
+        input_values = tokenizer(data_audio, return_tensors = "pt").input_values
+        # Storing logits (non-normalized prediction values)
+        logits = model(input_values).logits
+        # Storing predicted ids
+        prediction = torch.argmax(logits, dim = -1)
+        # Passing the prediction to the tokenzer decode to get the transcription
+        transcription = tokenizer.batch_decode(prediction)[0]
+        # Printing the transcription
+        print(transcription)
     return transcription
 
   def check_origin(self, origin):
