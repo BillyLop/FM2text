@@ -106,7 +106,7 @@ class RSConnectionSocket(WebSocketHandler):
     print("audio tipo")
     print(type(audio))
     print(audio)
-    stream = librosa.stream(filename, block_length = 19000, frame_length = 10000, hop_length = 512) 
+    stream = librosa.stream(filename, block_length = 19000, frame_length =2048, hop_length = 1024) 
     # Importing Wav2Vec pretrained model
     tokenizer = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-large-xlsr-53-spanish")
     model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-large-xlsr-53-spanish")
